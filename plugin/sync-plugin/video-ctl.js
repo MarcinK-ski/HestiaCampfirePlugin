@@ -2,7 +2,7 @@ var videoElement = undefined;
 var lastLoadedPage = undefined;
 var lag = -1;
 
-function loadVideoElement() 
+function loadVideoElement()
 {
 	console.log(document);
 	videoElement = document.getElementsByTagName("video")[0];
@@ -25,52 +25,52 @@ function loadVideoElement()
 	}
 }
 
-function playVideo() 
+function playVideo()
 {
 	if (videoElement)
 	{
 		videoElement.play();
-	} 
-	else 
+	}
+	else
 	{
 		console.warn("Video is undefined or null");
 	}
 }
 
-function pauseVideo() 
+function pauseVideo()
 {
 	if (videoElement)
 	{
 		videoElement.pause();
-	} 
-	else 
+	}
+	else
 	{
 		console.warn("Video is undefined or null");
 	}
 }
 
-function syncVideo() 
+function syncVideo()
 {
 	if (videoElement)
 	{
 		videoElement.currentTime = 20
-	} 
-	else 
+	}
+	else
 	{
 		console.warn("Video is undefined or null");
 	}
 }
 
-function showPageUrl() 
+function showPageUrl()
 {
 	console.log(window.top);
 	console.log(window.document);
 	console.log(currentDomainPage);
-	
+
 	lastLoadedPage = document;
 }
 
-function lagMeasure() 
+function lagMeasure()
 {
 	lag--;
 	console.log("Lag: " + lag);
