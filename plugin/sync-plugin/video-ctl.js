@@ -1,64 +1,78 @@
-var video = undefined;
+var videoElement = undefined;
 var lastLoadedPage = undefined;
 var lag = -1;
 
-function loadVideoElement() 
+function loadVideoElement()
 {
-	video = document.getElementsByTagName("video")[0];
-	if (!video) 
+	console.log(document);
+	videoElement = document.getElementsByTagName("video")[0];
+
+	if (!videoElement || !videoElement.offsetParent)
 	{
 		console.warn("No video was found on this page");
-		video = null;
+
+		if (!videoElement.offsetParent)
+		{
+			console.warn("Video element is hidden");
+		}
+
+		videoElement = null;
+	}
+	else
+	{
+		console.log("VIDEO FOUND:");
+		console.log(videoElement);
 	}
 }
 
-function playVideo() 
+function playVideo()
 {
-	if (video) 
+	if (videoElement)
 	{
-		video.play();
-	} 
-	else 
+		videoElement.play();
+	}
+	else
 	{
 		console.warn("Video is undefined or null");
 	}
 }
 
-function pauseVideo() 
+function pauseVideo()
 {
-	if (video) 
+	if (videoElement)
 	{
-		video.pause();
-	} 
-	else 
+		videoElement.pause();
+	}
+	else
 	{
 		console.warn("Video is undefined or null");
 	}
 }
 
-function syncVideo() 
+function syncVideo()
 {
-	if (video) 
+	if (videoElement)
 	{
-		video.currentTime = 20
-	} 
-	else 
+		videoElement.currentTime = 20
+	}
+	else
 	{
 		console.warn("Video is undefined or null");
 	}
 }
 
-function showPageUrl() 
+function showPageUrl()
 {
 	console.log(window.top);
 	console.log(window.document);
 	console.log(currentDomainPage);
-	
+
 	lastLoadedPage = document;
 }
 
-function lagMeasure() 
+function lagMeasure()
 {
 	lag--;
 	console.log("Lag: " + lag);
+	destroyCtrlPanel();
 }
