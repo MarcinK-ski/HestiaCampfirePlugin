@@ -1,7 +1,7 @@
 console.log("INIT has been started");
 var currentDomainPage = undefined;
 
-function receiveMessage(event)
+function receiveMessage(event, isFromSocket = false)
 {
 	var message = event.data;
 	console.log("INCOMING MESSAGE: ");
@@ -10,22 +10,22 @@ function receiveMessage(event)
 	switch (message) 
 	{
 		case "LOAD":
-			loadVideoElement();
+			loadVideoElement(isFromSocket);
 			break;
 		case "PLAY":
-			playVideo();
+			playVideo(isFromSocket);
 			break;
 		case "PAUSE":
-			pauseVideo();
+			pauseVideo(isFromSocket);
 			break;
 		case "SYNC":
-			syncVideo();
+			syncVideo(isFromSocket);
 			break;
 		case "INFO":
-			showPageUrl();
+			showPageUrl(isFromSocket);
 			break;
 		case "LAG":
-			lagMeasure();
+			lagMeasure(isFromSocket);
 			break;
 	}
 }
@@ -36,22 +36,21 @@ function onLoadedWebPage()
 	currentDomainPage = document.domain;
 	console.log("Current domain is: " + currentDomainPage);
 
-
-		loadVideoElement();
-		if (videoElement)
+	loadVideoElement();
+	if (videoElement)
+	{
+		if (!isButtonsDivActive)
 		{
-			if (!isButtonsDivActive)
-			{
-				buildCtrlPanel();
-			}
+			buildCtrlPanel();
 		}
-		else
-		{
-			// TODO: Info, ze nie ma video - najlepiej ikonka plugina
+	}
+	else
+	{
+		// TODO: Info, ze nie ma video - najlepiej ikonka plugina
 
-			if (isButtonsDivActive && !forceDisplay)
-			{
-				destroyCtrlPanel();
-			}
+		if (isButtonsDivActive && !forceDisplay)
+		{
+			destroyCtrlPanel();
 		}
+	}
 }

@@ -2,7 +2,7 @@ var videoElement = undefined;
 var lastLoadedPage = undefined;
 var lag = -1;
 
-function loadVideoElement()
+function loadVideoElement(isFromSocket = false)
 {
 	console.log(document);
 	videoElement = document.getElementsByTagName("video")[0];
@@ -25,11 +25,18 @@ function loadVideoElement()
 	}
 }
 
-function playVideo()
+function playVideo(isFromSocket = false)
 {
 	if (videoElement)
 	{
 		videoElement.play();
+		if (!isFromSocket)
+		{
+			console.warn("Sending!");
+			console.log(hestiaWebsocketConnection);
+			console.log("is" + isConnectionGenerated);
+			hestiaWebsocketConnection.send("PLAY");
+		}
 	}
 	else
 	{
@@ -37,11 +44,18 @@ function playVideo()
 	}
 }
 
-function pauseVideo()
+function pauseVideo(isFromSocket = false)
 {
 	if (videoElement)
 	{
 		videoElement.pause();
+		if (!isFromSocket)
+		{
+			console.warn("Sending!");
+			console.log(hestiaWebsocketConnection);
+			console.log("is" + isConnectionGenerated);
+			hestiaWebsocketConnection.send("PAUSE");
+		}
 	}
 	else
 	{
@@ -49,11 +63,13 @@ function pauseVideo()
 	}
 }
 
-function syncVideo()
+function syncVideo(isFromSocket = false)
 {
 	if (videoElement)
 	{
 		videoElement.currentTime = 20
+		generateConnection();
+		console.log(hestiaWebsocketConnection);
 	}
 	else
 	{
@@ -61,7 +77,7 @@ function syncVideo()
 	}
 }
 
-function showPageUrl()
+function showPageUrl(isFromSocket = false)
 {
 	console.log(window.top);
 	console.log(window.document);
@@ -70,9 +86,10 @@ function showPageUrl()
 	lastLoadedPage = document;
 }
 
-function lagMeasure()
+function lagMeasure(isFromSocket = false)
 {
 	lag--;
 	console.log("Lag: " + lag);
-	destroyCtrlPanel();
+	//destroyCtrlPanel();
+	closeConnection();
 }

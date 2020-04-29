@@ -19,7 +19,8 @@
         "ctl-init.js",
         "ctl-init-events.js",
         "ctrl-panel-builder.js",
-        "video-ctl.js"
+        "video-ctl.js",
+        "ws-connection.js"
       ],
       "run_at": "document_end"
     }
