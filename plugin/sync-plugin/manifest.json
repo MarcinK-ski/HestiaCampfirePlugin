@@ -14,7 +14,7 @@
       "matches": ["*://*.youtube.com/*"],
       "js": [
         "video-ctl.js",
-        "ctl-builder.js",
+        "ctl-init.js",
         "ctrl-panel-builder.js"
       ]
     }
