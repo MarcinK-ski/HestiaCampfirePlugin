@@ -18,5 +18,5 @@ function closeConnection()
 {
     console.log("CLOSE WS!");
     console.log(hestiaWebsocketConnection);
-    hestiaWebsocketConnection?.close();
+    hestiaWebsocketConnection.close();
 }

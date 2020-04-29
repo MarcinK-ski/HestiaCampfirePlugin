@@ -10,7 +10,10 @@ function receiveMessage(event, isFromSocket = false)
 	switch (message) 
 	{
 		case "LOAD":
-			loadVideoElement(isFromSocket);
+			if (!isFromSocket)
+			{
+				loadVideoElement();
+			}
 			break;
 		case "PLAY":
 			playVideo(isFromSocket);
@@ -19,7 +22,10 @@ function receiveMessage(event, isFromSocket = false)
 			pauseVideo(isFromSocket);
 			break;
 		case "SYNC":
-			syncVideo(isFromSocket);
+			if (!isFromSocket)
+			{
+				syncRequest();
+			}
 			break;
 		case "INFO":
 			showPageUrl(isFromSocket);
@@ -27,6 +33,23 @@ function receiveMessage(event, isFromSocket = false)
 		case "LAG":
 			lagMeasure(isFromSocket);
 			break;
+		case "CONNECT":
+			if (!isFromSocket)
+			{
+				generateConnection();
+			}
+			break;
+		case "DISCONNECT":
+			if (!isFromSocket)
+			{
+				closeConnection();
+			}
+			break;
+		default:
+			if (message.includes("SYNC-T"))
+			{
+				syncVideo(message);
+			}
 	}
 }
 

@@ -32,11 +32,26 @@ function buildCtrlPanel() {
     buttonsDiv.appendChild(syncBtn);
 
 
+    var connectBtn = document.createElement("button");
+    connectBtn.onclick = function() {
+        parent.postMessage('CONNECT', '*');
+    };
+    connectBtn.innerText = "CONNECT";
+    buttonsDiv.appendChild(connectBtn);
+
+    var disconnectBtn = document.createElement("button");
+    disconnectBtn.onclick = function() {
+        parent.postMessage('DISCONNECT', '*');
+    };
+    disconnectBtn.innerText = "DISCONNECT";
+    buttonsDiv.appendChild(disconnectBtn);
+
+
     var loadVideoBtn = document.createElement("button");
     loadVideoBtn.onclick = function() {
         parent.postMessage('LOAD', '*');
     };
-    loadVideoBtn.innerText = "LOAD";
+    loadVideoBtn.innerText = "VIDEO LOAD";
     buttonsDiv.appendChild(loadVideoBtn);
 
     var showUrlBtn = document.createElement("button");
