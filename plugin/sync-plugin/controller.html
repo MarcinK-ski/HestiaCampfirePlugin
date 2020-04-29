@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head> 
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	
+	<script>
+	function loadVideoElement() 
+	{
+		parent.postMessage('LOAD', '*');	//TODO: Pozamieniać * na prawidłową wartość
+	}
+
+	function playVideo() 
+	{
+		parent.postMessage('PLAY', '*');
+	}
+
+	function pauseVideo() 
+	{
+		parent.postMessage('PAUSE', '*');
+	}
+
+	function syncVideo() 
+	{
+		parent.postMessage('SYNC', '*');
+	}
+
+	function showPageUrl() 
+	{
+		parent.postMessage('INFO', '*');
+	}
+
+	function lagMeasure() 
+	{
+		parent.postMessage('LAG', '*');
+	}
+	</script>
+</head>
+<body>
+	<div id="curtain" style="background-color: rgba(255, 0, 0, 0.3); opacity: 0.5;">
+		<button class="btn" onclick="playVideo()"><i class="fa fa-home"></i></button><br />
+		<button class="btn" onclick="pauseVideo()"><i class="fa fa-bars"></i></button><br />
+		<button class="btn" onclick="syncVideo()"><i class="fa fa-trash"></i></button><br />
+		<button class="btn" onclick="loadVideoElement()"><i class="fa fa-close"></i></button><br />
+		<button class="btn" onclick="showPageUrl()"><i class="fa fa-folder"></i></button>
+		<button class="btn" onclick="lagMeasure()"><i class="fa fa-folder"></i></button>
+	</div>
+</body>
+</html>
