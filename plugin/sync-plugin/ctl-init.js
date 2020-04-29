@@ -1,7 +1,3 @@
-window.addEventListener("message", receiveMessage, false);
-window.addEventListener("yt-navigate", onLoadedWebPage);
-window.addEventListener("popstate", onLoadedWebPage);
-
 var currentDomainPage = undefined;
 
 function receiveMessage(event)
@@ -33,7 +29,7 @@ function receiveMessage(event)
 	}
 }
 
-function onLoadedWebPage() 
+function onLoadedWebPage()
 {
 	currentDomainPage = document.domain;
 	console.log("Current domain is: " + currentDomainPage);
