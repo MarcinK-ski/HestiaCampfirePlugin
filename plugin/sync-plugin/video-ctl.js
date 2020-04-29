@@ -1,22 +1,35 @@
-var video = undefined;
+var videoElement = undefined;
 var lastLoadedPage = undefined;
 var lag = -1;
 
 function loadVideoElement() 
 {
-	video = document.getElementsByTagName("video")[0];
-	if (!video) 
+	console.log(document);
+	videoElement = document.getElementsByTagName("video")[0];
+
+	if (!videoElement || !videoElement.offsetParent)
 	{
 		console.warn("No video was found on this page");
-		video = null;
+
+		if (!videoElement.offsetParent)
+		{
+			console.warn("Video element is hidden");
+		}
+
+		videoElement = null;
+	}
+	else
+	{
+		console.log("VIDEO FOUND:");
+		console.log(videoElement);
 	}
 }
 
 function playVideo() 
 {
-	if (video) 
+	if (videoElement)
 	{
-		video.play();
+		videoElement.play();
 	} 
 	else 
 	{
@@ -26,9 +39,9 @@ function playVideo()
 
 function pauseVideo() 
 {
-	if (video) 
+	if (videoElement)
 	{
-		video.pause();
+		videoElement.pause();
 	} 
 	else 
 	{
@@ -38,9 +51,9 @@ function pauseVideo()
 
 function syncVideo() 
 {
-	if (video) 
+	if (videoElement)
 	{
-		video.currentTime = 20
+		videoElement.currentTime = 20
 	} 
 	else 
 	{
@@ -61,4 +74,5 @@ function lagMeasure()
 {
 	lag--;
 	console.log("Lag: " + lag);
+	destroyCtrlPanel();
 }
