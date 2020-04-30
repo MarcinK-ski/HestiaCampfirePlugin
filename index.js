@@ -1,35 +1,39 @@
 const express = require('express');
 const WebSocket = require('ws');
+const url = require('url');
 
 const PORT = process.env.PORT || 8080;
-const INDEX_HTML = "overview.html";
+const INDEX_HTML = 'overview.html';
 
 var roomsUsersConnectionDictionary = [];
 
-console.log("Starting server...");
+console.log('> Starting server...');
 
 const server = express()
     .use((req, res) => res.sendFile(INDEX_HTML, { root: __dirname }))
-    .listen(PORT, () => console.log(`Listening on port ${PORT}`));
+    .listen(PORT, () => console.log(`> Listening on port ${PORT}`));
 
 const wss = new WebSocket.Server({server});
 
 wss.on('connection', function connection(ws, req) {
     console.log('connected');
+    const urlQuery = url.parse(req.url, true).query;
 
     ws.id = req.headers['sec-websocket-key'];
     console.log(ws.id);
 
-    ws.room = "01";
-    if (roomsUsersConnectionDictionary[ws.room]) {
-        roomsUsersConnectionDictionary[ws.room].push(ws);
-    } else {
-        roomsUsersConnectionDictionary[ws.room] = [ws];
-    }
+    ws.room = urlQuery.room;
     console.log(ws.room);
 
+    const roomId = ws.room;
+    if (roomsUsersConnectionDictionary[roomId]) {
+        roomsUsersConnectionDictionary[roomId].push(ws);
+    } else {
+        roomsUsersConnectionDictionary[roomId] = [ws];
+    }
+
     ws.on('message', function incoming(message) {
-        console.log('received: %s', message);
+        console.log('> received: %s', message);
         console.log(ws.id);
 
         roomsUsersConnectionDictionary[ws.room].forEach(sock => {
@@ -39,5 +43,37 @@ wss.on('connection', function connection(ws, req) {
         });
     });
 
+    ws.on('close', function closing(){
+        console.log(`> User: ${ws.id} send close event.`);
+        removeUserFromDictionary(ws, ws.room);
+    });
+
     ws.send('CONNECTED TO ROOM:' + ws.room);
 });
+
+function removeUserFromDictionary(user, roomId) {
+    var room = roomsUsersConnectionDictionary[roomId];
+    const index = room.indexOf(user);
+
+    if (index > -1) {
+        room.splice(index, 1);
+        console.log(`> User: ${user.id} has been removed from room: ${roomId}`);
+    } else {
+        console.warn(`? User: ${user.id} is not found in room: ${roomId}`);
+        console.log(user);
+        console.log('---');
+        console.log(room);
+    }
+
+    if (room.length < 1) {
+        delete roomsUsersConnectionDictionary[roomId];
+        if (roomsUsersConnectionDictionary[roomId]) {
+            console.error('! Something went wrong. Room has not been deleted!!!');
+            console.warn(roomsUsersConnectionDictionary[roomId]);
+            console.log('---');
+            console.log(roomsUsersConnectionDictionary);
+        } else {
+            console.log(`> Room: ${roomId} has been deleted!`);
+        }
+    }
+}
