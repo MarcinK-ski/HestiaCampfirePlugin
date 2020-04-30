@@ -23,4 +23,5 @@ function restoreOptions()
 }
 
 // TODO: Albo automatyczne wczytywanie currentRoomId albo informowanie ikoną, że nie jest podany
+document.addEventListener('DOMContentLoaded', restoreOptions);
 document.querySelector("form").addEventListener("submit", saveOptions);
