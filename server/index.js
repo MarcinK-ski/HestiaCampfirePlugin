@@ -1,9 +1,18 @@
+const express = require('express');
 const WebSocket = require('ws');
 
-console.log("Starting server...");
-const wss = new WebSocket.Server({ port: 8080 });
+const PORT = 8080;
+const INDEX_HTML = "overview.html";
 
 var roomsUsersConnectionDictionary = [];
+
+console.log("Starting server...");
+
+const server = express()
+    .use((req, res) => res.sendFile(INDEX_HTML, { root: __dirname }))
+    .listen(PORT, () => console.log(`Listening on port ${PORT}`));
+
+const wss = new WebSocket.Server({server});
 
 wss.on('connection', function connection(ws, req) {
     console.log('connected');
