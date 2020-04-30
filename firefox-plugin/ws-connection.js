@@ -4,6 +4,8 @@ var roomId = undefined;
 
 function generateConnection(user = "U")
 {
+    isConnectionGenerated = false;
+
     roomId = browser.storage.sync.get('room_id');
     console.log(browser.storage);
     roomId.then(value => {
@@ -18,6 +20,7 @@ function generateConnection(user = "U")
             hestiaWebsocketConnection.onerror = function ()
             {
                 connectionEstablished(false);
+                isConnectionGenerated = false;
                 alert("Connection error!");
             };
 
@@ -30,10 +33,11 @@ function generateConnection(user = "U")
             hestiaWebsocketConnection.onclose = function (event)
             {
                 connectionEstablished(false);
+                isConnectionGenerated = false;
                 console.log(`Connection closed. Code: ${event.code}; Reason: ${event.reason}`);
             };
 
-            isConnectionGenerated = true; // TODO: Zrobić to porządniej
+            isConnectionGenerated = true;
         }
         else
         {
@@ -48,7 +52,7 @@ function generateConnection(user = "U")
 function closeConnection()
 {
     console.log("CLOSE WS!");
-    console.log(hestiaWebsocketConnection);
     hestiaWebsocketConnection.close();
-    connectionEstablished();
+    isConnectionGenerated = false;
+    connectionEstablished(false);
 }
