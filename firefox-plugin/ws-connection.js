@@ -4,6 +4,8 @@ var roomId = undefined;
 
 function generateConnection(user = "U")
 {
+    isConnectionGenerated = false;
+
     roomId = browser.storage.sync.get('room_id');
     console.log(browser.storage);
     roomId.then(value => {
@@ -11,9 +13,16 @@ function generateConnection(user = "U")
         const roomIdValue = value.room_id;
         if (value && roomIdValue)
         {
-            console.log("Try to connect to websocket with room: " + roomIdValue);
             const wsUrl = "wss://hestia-campfire-server.herokuapp.com?room=" + roomIdValue + "&user=" + user;
             hestiaWebsocketConnection = new WebSocket(wsUrl);
+            console.log("Trying to connect to websocket with room: " + roomIdValue);
+
+            hestiaWebsocketConnection.onerror = function ()
+            {
+                connectionEstablished(false);
+                isConnectionGenerated = false;
+                alert("Connection error!");
+            };
 
             hestiaWebsocketConnection.onmessage = function (event)
             {
@@ -21,11 +30,21 @@ function generateConnection(user = "U")
                 receiveMessage(event, true);
             };
 
-            isConnectionGenerated = true; // TODO: Zrobić to porządniej
+            hestiaWebsocketConnection.onclose = function (event)
+            {
+                connectionEstablished(false);
+                isConnectionGenerated = false;
+                console.log(`Connection closed. Code: ${event.code}; Reason: ${event.reason}`);
+            };
+
+            isConnectionGenerated = true;
         }
         else
         {
-            console.warn("There no roomId specified!");
+            const warnMessage = "There no roomId specified!";
+            console.warn(warnMessage);
+            connectionEstablished(false);
+            alert(warnMessage);
         }
     });
 }
@@ -33,6 +52,7 @@ function generateConnection(user = "U")
 function closeConnection()
 {
     console.log("CLOSE WS!");
-    console.log(hestiaWebsocketConnection);
     hestiaWebsocketConnection.close();
+    isConnectionGenerated = false;
+    connectionEstablished(false);
 }

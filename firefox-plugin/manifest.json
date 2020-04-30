@@ -1,14 +1,16 @@
 {
   "manifest_version": 2,
   "name": "Hestia Campfire Plugin",
-  "version": "1.0",
-
+  "version": "1.2",
   "description": "Plugin for watching videos on website with your family or/and friends in this same time, on different devices.",
-
-  "icons": {
+  "author": "Marcin Kalinowski",
+  "developer": {
+    "name": "Marcin Kalinowski",
+    "url": "https://github.com/MarcinK-ski"
   },
-  "web_accessible_resources": [
-  ],
+  "icons": {
+    "128": "icons/hcp-128.png"
+  },
   "permissions": [
     "storage"
   ],
