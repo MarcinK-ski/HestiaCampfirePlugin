@@ -1,17 +1,30 @@
 var isConnectionGenerated = false;
 var hestiaWebsocketConnection = null;
+var roomId = undefined;
 
-function generateConnection(user = "U", roomNo = "01")
+function generateConnection(user = "U")
 {
-    hestiaWebsocketConnection = new WebSocket("ws://localhost:8080?room=" + roomNo + "&user=" + user);
+    roomId = browser.storage.sync.get('room_id');
+    roomId.then(value => {
+        const roomIdValue = value.room_id;
+        if (value && roomIdValue)
+        {
+            console.log("Try to connect to websocket with room: " + roomIdValue);
+            hestiaWebsocketConnection = new WebSocket("ws://localhost:8080?room=" + roomIdValue + "&user=" + user);
 
-    hestiaWebsocketConnection.onmessage = function (event)
-    {
-        console.log("WS:" + event.data);
-        receiveMessage(event, true);
-    };
+            hestiaWebsocketConnection.onmessage = function (event)
+            {
+                console.log("WS:" + event.data);
+                receiveMessage(event, true);
+            };
 
-    isConnectionGenerated = true; // TODO: Zrobić to porządniej
+            isConnectionGenerated = true; // TODO: Zrobić to porządniej
+        }
+        else
+        {
+            console.warn("There no roomId specified!");
+        }
+    });
 }
 
 function closeConnection()
