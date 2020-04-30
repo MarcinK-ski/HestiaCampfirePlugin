@@ -11,9 +11,15 @@ function generateConnection(user = "U")
         const roomIdValue = value.room_id;
         if (value && roomIdValue)
         {
-            console.log("Try to connect to websocket with room: " + roomIdValue);
             const wsUrl = "wss://hestia-campfire-server.herokuapp.com?room=" + roomIdValue + "&user=" + user;
             hestiaWebsocketConnection = new WebSocket(wsUrl);
+            console.log("Trying to connect to websocket with room: " + roomIdValue);
+
+            hestiaWebsocketConnection.onerror = function ()
+            {
+                connectionEstablished(false);
+                alert("Connection error!");
+            };
 
             hestiaWebsocketConnection.onmessage = function (event)
             {
@@ -21,22 +27,20 @@ function generateConnection(user = "U")
                 receiveMessage(event, true);
             };
 
-            hestiaWebsocketConnection.onerror = function ()
+            hestiaWebsocketConnection.onclose = function (event)
             {
                 connectionEstablished(false);
-            };
-
-            hestiaWebsocketConnection.onclose = function ()
-            {
-                connectionEstablished(false);
+                console.log(`Connection closed. Code: ${event.code}; Reason: ${event.reason}`);
             };
 
             isConnectionGenerated = true; // TODO: Zrobić to porządniej
         }
         else
         {
-            console.warn("There no roomId specified!");
+            const warnMessage = "There no roomId specified!";
+            console.warn(warnMessage);
             connectionEstablished(false);
+            alert(warnMessage);
         }
     });
 }
