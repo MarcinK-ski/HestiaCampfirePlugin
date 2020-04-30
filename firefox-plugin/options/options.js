@@ -1,6 +1,5 @@
 const DEFAULT_ROOM_ID = "R01";
 
-
 function saveOptions(e)
 {
     browser.storage.sync.set({
@@ -23,5 +22,5 @@ function restoreOptions()
     });
 }
 
-document.addEventListener('DOMContentLoaded', restoreOptions);
+// TODO: Albo automatyczne wczytywanie currentRoomId albo informowanie ikoną, że nie jest podany
 document.querySelector("form").addEventListener("submit", saveOptions);

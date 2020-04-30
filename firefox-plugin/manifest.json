@@ -19,7 +19,7 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "hestia@campfire.plugin"
+      "id": "plugin@hestia.campfire"
     }
   },
   "content_scripts": [

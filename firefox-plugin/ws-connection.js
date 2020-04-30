@@ -5,12 +5,15 @@ var roomId = undefined;
 function generateConnection(user = "U")
 {
     roomId = browser.storage.sync.get('room_id');
+    console.log(browser.storage);
     roomId.then(value => {
+        console.log(value);
         const roomIdValue = value.room_id;
         if (value && roomIdValue)
         {
             console.log("Try to connect to websocket with room: " + roomIdValue);
-            hestiaWebsocketConnection = new WebSocket("ws://localhost:8080?room=" + roomIdValue + "&user=" + user);
+            const wsUrl = "wss://hestia-campfire-server.herokuapp.com?room=" + roomIdValue + "&user=" + user;
+            hestiaWebsocketConnection = new WebSocket(wsUrl);
 
             hestiaWebsocketConnection.onmessage = function (event)
             {
