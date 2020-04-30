@@ -2,7 +2,10 @@ const buttonsDivId = "CtlButtonsDivCtrlPanel";
 var isButtonsDivActive = false;
 var forceDisplay = false;
 
-function buildCtrlPanel() {
+var connectBtn;
+var disconnectBtn;
+
+    function buildCtrlPanel() {
     var buttonsDiv = document.createElement("div");
     buttonsDiv.id = buttonsDivId;
     buttonsDiv.style = "background-color: rgba(255, 0, 0, 0.3); opacity: 0.5; position: fixed; z-index: 99999; bottom: 50px; left: 0px; width:60px";
@@ -31,19 +34,21 @@ function buildCtrlPanel() {
     syncBtn.innerText = "SYNC";
     buttonsDiv.appendChild(syncBtn);
 
-
-    var connectBtn = document.createElement("button");
+    connectBtn = document.createElement("button");
     connectBtn.onclick = function() {
         parent.postMessage('CONNECT', '*');
+        connectionEstablished()
     };
     connectBtn.innerText = "CONNECT";
     buttonsDiv.appendChild(connectBtn);
 
-    var disconnectBtn = document.createElement("button");
+    disconnectBtn = document.createElement("button");
     disconnectBtn.onclick = function() {
         parent.postMessage('DISCONNECT', '*');
+        connectionEstablished(false)
     };
     disconnectBtn.innerText = "DISCONNECT";
+    disconnectBtn.disabled = true;
     buttonsDiv.appendChild(disconnectBtn);
 
 
@@ -76,4 +81,20 @@ function buildCtrlPanel() {
 function destroyCtrlPanel() {
     document.getElementById(buttonsDivId).remove();
     isButtonsDivActive = false;
+}
+
+function disableConnectBtn(toDisable = true)
+{
+    connectBtn.disabled = toDisable;
+}
+
+function disableDisconnectBtn(toDisable = true)
+{
+    disconnectBtn.disabled = toDisable;
+}
+
+function connectionEstablished(isEstablished = true)
+{
+    disableConnectBtn(isEstablished);
+    disableDisconnectBtn(!isEstablished);
 }

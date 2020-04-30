@@ -21,11 +21,22 @@ function generateConnection(user = "U")
                 receiveMessage(event, true);
             };
 
+            hestiaWebsocketConnection.onerror = function ()
+            {
+                connectionEstablished(false);
+            };
+
+            hestiaWebsocketConnection.onclose = function ()
+            {
+                connectionEstablished(false);
+            };
+
             isConnectionGenerated = true; // TODO: Zrobić to porządniej
         }
         else
         {
             console.warn("There no roomId specified!");
+            connectionEstablished(false);
         }
     });
 }
@@ -35,4 +46,5 @@ function closeConnection()
     console.log("CLOSE WS!");
     console.log(hestiaWebsocketConnection);
     hestiaWebsocketConnection.close();
+    connectionEstablished();
 }
