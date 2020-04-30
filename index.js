@@ -16,14 +16,14 @@ const server = express()
 const wss = new WebSocket.Server({server});
 
 wss.on('connection', function connection(ws, req) {
-    console.log('connected');
+    console.log('> Connected new user!');
     const urlQuery = url.parse(req.url, true).query;
 
     ws.id = req.headers['sec-websocket-key'];
-    console.log(ws.id);
+    console.log(`> UserId: ${ws.id}`);
 
     ws.room = urlQuery.room;
-    console.log(ws.room);
+    console.log(`> To room: ${ws.room}`);
 
     const roomId = ws.room;
     if (roomsUsersConnectionDictionary[roomId]) {
@@ -33,8 +33,7 @@ wss.on('connection', function connection(ws, req) {
     }
 
     ws.on('message', function incoming(message) {
-        console.log('> received: %s', message);
-        console.log(ws.id);
+        console.log(`> Received message: ${message} from user: ${ws.id}`);
 
         roomsUsersConnectionDictionary[ws.room].forEach(sock => {
             if (sock.id !== ws.id) {
@@ -48,7 +47,7 @@ wss.on('connection', function connection(ws, req) {
         removeUserFromDictionary(ws, ws.room);
     });
 
-    ws.send('CONNECTED TO ROOM:' + ws.room);
+    ws.send('YOU ARE CONNECTED TO ROOM:' + ws.room);
 });
 
 function removeUserFromDictionary(user, roomId) {
