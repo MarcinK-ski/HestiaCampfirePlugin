@@ -1,5 +1,6 @@
 const WebSocket = require('ws');
 
+console.log("Starting server...");
 const wss = new WebSocket.Server({ port: 8080 });
 
 var roomsUsersConnectionDictionary = [];
