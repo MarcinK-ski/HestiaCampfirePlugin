@@ -50,6 +50,12 @@ wss.on('connection', function connection(ws, req) {
     ws.send('YOU ARE CONNECTED TO ROOM:' + ws.room);
 });
 
+setInterval(function () {
+    wss.clients.forEach(ws => {
+        ws.send("HEARTBEAT");
+    })
+}, 5000);
+
 function removeUserFromDictionary(user, roomId) {
     var room = roomsUsersConnectionDictionary[roomId];
     const index = room.indexOf(user);
