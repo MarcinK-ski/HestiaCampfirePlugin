@@ -16,9 +16,8 @@ function restoreOptions()
     var gettingItem = browser.storage.sync.get('room_id');
     gettingItem.then((res) =>
     {
-        var currentRoomId = res.room_id || DEFAULT_ROOM_ID;
-        document.querySelector("#room-id").value = currentRoomId;
-        document.querySelector("#storage-room-id").innerText = currentRoomId;
+        document.querySelector("#room-id").value = res.room_id || DEFAULT_ROOM_ID;
+        document.querySelector("#storage-room-id").innerText = res.room_id || undefined;
     });
 }
 
