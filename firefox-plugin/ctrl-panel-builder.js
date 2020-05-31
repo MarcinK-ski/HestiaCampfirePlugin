@@ -2,6 +2,7 @@ const buttonsDivId = "CtlButtonsDivCtrlPanel";
 var isButtonsDivActive = false;
 var forceDisplay = false;
 
+var roomNamePreview;
 var connectBtn;
 var disconnectBtn;
 
@@ -10,10 +11,10 @@ function buildCtrlPanel() {
     mainContainerDiv.id = buttonsDivId;
     mainContainerDiv.style = "background-color: rgba(255, 0, 0, 0.3); opacity: 0.5; position: fixed; z-index: 99999; bottom: 50px; left: 0px; width:60px";
 
-    var roomNamePreview = document.createElement("p");
+    roomNamePreview = document.createElement("p");
     roomNamePreview.style.color = "white";
     roomNamePreview.innerText = "RoomNameHere";
-    fillRoomNamePreviewInnerText(roomNamePreview);
+    fillRoomNamePreviewInnerText();
     mainContainerDiv.appendChild(roomNamePreview);
 
     var playBtn = document.createElement("button");
@@ -109,26 +110,24 @@ function connectionEstablished(isEstablished = true)
 {
     disableConnectBtn(isEstablished);
     disableDisconnectBtn(!isEstablished);
+
+    if (!isEstablished)
+    {
+        fillRoomNamePreviewInnerText();
+    }
 }
 
-function fillRoomNamePreviewInnerText(roomNamePreview) {
+function fillRoomNamePreviewInnerText()
+{
     browser.storage.sync.get('room_id').then((res) =>
     {
-        changeRoomNameInPreview(roomNamePreview, res.room_id);
-    });
-
-    browser.storage.onChanged.addListener((c, n) =>
-    {
-        if (n === "sync" && c.room_id)
-        {
-            changeRoomNameInPreview(roomNamePreview, c.room_id.newValue);
-        }
+        changeInnerTextInElement(roomNamePreview, res.room_id, "RoomNameNotFound");
     });
 }
 
-function changeRoomNameInPreview(roomNamePreview, newInnerTextValue)
+function changeInnerTextInElement(elem, newInnerTextValue, defaultStaticText)
 {
-    roomNamePreview.innerText =  newInnerTextValue || "RoomNameNotFound"
+    elem.innerText =  newInnerTextValue || defaultStaticText;
 }
 
 function testingButtons(isEnabled, mainContainerDiv)
