@@ -45,7 +45,7 @@ wss.on('connection', function connection(ws, req) {
     ws.on('message', function incoming(message) {
         console.log(`> Received message: ${message} from user: ${ws.id}`);
 
-        if (message.includes('SYNC') && ut.isUserTypeWithPermission(ws.userType)) {
+        if (!message.includes('SYNC') || ut.isUserTypeWithPermission(ws.userType)) {
             roomsUsersConnectionDictionary[ws.room].forEach(sock => {
                 if (sock.id !== ws.id) {
                     sock.send(message);
