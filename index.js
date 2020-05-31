@@ -33,7 +33,7 @@ wss.on('connection', function connection(ws, req) {
     const roomId = ws.room;
     console.log(`> To room: ${roomId}`);
 
-    ws.userType = getHostIsAvaliable(roomId);
+    ws.userType = getHostIfAvaliable(roomId);
     console.log(`> As: ${ws.userType}`);
 
     if (roomsUsersConnectionDictionary[roomId]) {
@@ -72,7 +72,7 @@ setInterval(function () {
     })
 }, 5000);
 
-function getHostIsAvaliable(roomId) {
+function getHostIfAvaliable(roomId) {
     if (!roomsUsersConnectionDictionary[roomId]
      || !roomsUsersConnectionDictionary[roomId]
          .some(element => element.userType === ut.userTypes["HOST"])) {
@@ -89,6 +89,13 @@ function removeUserFromDictionary(user, roomId) {
     if (index > -1) {
         room.splice(index, 1);
         console.log(`> User: ${user.id} has been removed from room: ${roomId}`);
+        if (ut.isUserTypeWithPermission(user.userType)) {
+            console.warn(`> User was permitted - all userTypes will be reset 
+                                    (oldest user will be as HOST, others - GUEST-V).`);
+            for (i = 0; i < room.length; i++) {
+                room[i].userType = getHostIfAvaliable(roomId);
+            }
+        }
     } else {
         console.warn(`? User: ${user.id} is not found in room: ${roomId}`);
         console.log(user);
