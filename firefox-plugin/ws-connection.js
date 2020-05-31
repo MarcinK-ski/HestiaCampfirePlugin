@@ -1,14 +1,14 @@
 var isConnectionGenerated = false;
 var hestiaWebsocketConnection = null;
-var roomId = undefined;
+var roomIdFromStorage = undefined;
 
 function generateConnection(user = "U")
 {
     isConnectionGenerated = false;
 
-    roomId = browser.storage.sync.get('room_id');
+    roomIdFromStorage = browser.storage.sync.get('room_id');
     console.log(browser.storage);
-    roomId.then(value => {
+    roomIdFromStorage.then(value => {
         console.log(value);
         const roomIdValue = value.room_id;
         if (value && roomIdValue)
