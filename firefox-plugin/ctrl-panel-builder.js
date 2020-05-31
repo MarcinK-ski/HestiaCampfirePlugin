@@ -6,6 +6,8 @@ var currentUserType;
 
 var roomNamePreview;
 var userTypePreview;
+var playBtn;
+var pauseBtn;
 var syncBtn;
 var connectBtn;
 var disconnectBtn;
@@ -28,7 +30,7 @@ function buildCtrlPanel()
     mainContainerDiv.appendChild(userTypePreview);
 
 
-    var playBtn = document.createElement("button");
+    playBtn = document.createElement("button");
     playBtn.onclick = function()
     {
         parent.postMessage('PLAY', '*');
@@ -37,7 +39,7 @@ function buildCtrlPanel()
     mainContainerDiv.appendChild(playBtn);
 
 
-    var pauseBtn = document.createElement("button");
+    pauseBtn = document.createElement("button");
     pauseBtn.onclick = function()
     {
         parent.postMessage('PAUSE', '*');
@@ -129,9 +131,11 @@ function setNewUserType(newUserType)
     currentUserType = newUserType;
     userTypePreview.innerText = newUserType;
 
-    if (syncBtn)
+    if (isButtonsDivActive)
     {
-        syncBtn.disabled = !isUserTypeWithPermission(newUserType);
+        disableSyncBtn(!isUserTypeWithPermission(newUserType));
+        disablePlayBtn(newUserType === userTypes["GUEST-D"]);
+        disablePauseBtn(newUserType === userTypes["GUEST-D"]);
     }
 }
 
@@ -148,6 +152,16 @@ function disableDisconnectBtn(toDisable = true)
 function disableSyncBtn(toDisable = true)
 {
     syncBtn.disabled = toDisable;
+}
+
+function disablePlayBtn(toDisable = true)
+{
+    playBtn.disabled = toDisable;
+}
+
+function disablePauseBtn(toDisable = true)
+{
+    pauseBtn.disabled = toDisable;
 }
 
 function connectionEstablished(isEstablished = true)
