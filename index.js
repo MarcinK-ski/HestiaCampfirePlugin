@@ -3,10 +3,9 @@ const WebSocket = require('ws');
 const url = require('url');
 
 updateUserTypesModule();
-var userTypes = require('./userTypesModule');
+var ut = require('./userTypesModule');
 
-console.log(userTypes);
-
+console.log(ut);
 const PORT = process.env.PORT || 8080;
 const INDEX_HTML = 'overview.html';
 
@@ -24,13 +23,19 @@ wss.on('connection', function connection(ws, req) {
     console.log('> Connected new user!');
     const urlQuery = url.parse(req.url, true).query;
 
+    ws.joinTimestamp = Date.now();
+    console.log(`> At: ${ws.joinTimestamp}`);
+
     ws.id = req.headers['sec-websocket-key'];
     console.log(`> UserId: ${ws.id}`);
 
     ws.room = urlQuery.room;
-    console.log(`> To room: ${ws.room}`);
-
     const roomId = ws.room;
+    console.log(`> To room: ${roomId}`);
+
+    ws.userType = getHostIsAvaliable(roomId);
+    console.log(`> As: ${ws.userType}`);
+
     if (roomsUsersConnectionDictionary[roomId]) {
         roomsUsersConnectionDictionary[roomId].push(ws);
     } else {
@@ -40,11 +45,16 @@ wss.on('connection', function connection(ws, req) {
     ws.on('message', function incoming(message) {
         console.log(`> Received message: ${message} from user: ${ws.id}`);
 
-        roomsUsersConnectionDictionary[ws.room].forEach(sock => {
-            if (sock.id !== ws.id) {
-                sock.send(message);
-            }
-        });
+        if (message.includes('SYNC') && ut.isUserTypeWithPermission(ws.userType)) {
+            roomsUsersConnectionDictionary[ws.room].forEach(sock => {
+                if (sock.id !== ws.id) {
+                    sock.send(message);
+                }
+            });
+        } else {
+            console.error(`>! User: ${ws.id} is not allowed to: ${message}, 
+                              because it is: ${ws.userType} in room: ${ws.room}`);
+        }
     });
 
     ws.on('close', function closing(){
@@ -58,8 +68,19 @@ wss.on('connection', function connection(ws, req) {
 setInterval(function () {
     wss.clients.forEach(ws => {
         ws.send("HEARTBEAT");
+        ws.send(`UTYPE-NT${ws.userType}`);
     })
 }, 5000);
+
+function getHostIsAvaliable(roomId) {
+    if (!roomsUsersConnectionDictionary[roomId]
+     || !roomsUsersConnectionDictionary[roomId]
+         .some(element => element.userType === ut.userTypes["HOST"])) {
+        return ut.userTypes["HOST"];
+    } else {
+        return ut.userTypes["GUEST-V"];
+    }
+}
 
 function removeUserFromDictionary(user, roomId) {
     var room = roomsUsersConnectionDictionary[roomId];
@@ -91,6 +112,6 @@ function removeUserFromDictionary(user, roomId) {
 function updateUserTypesModule() {
     var fs = require('fs');
     var userTypesFileContent = fs.readFileSync('firefox-plugin/user-types.js', 'utf8');
-    userTypesFileContent += "\nmodule.exports = userTypes;";
+    userTypesFileContent += "\nmodule.exports = {userTypes, isUserTypeWithPermission};";
     fs.writeFileSync('userTypesModule.js',userTypesFileContent);
 }
