@@ -68,9 +68,9 @@ wss.on('connection', function connection(ws, req) {
 setInterval(function () {
     wss.clients.forEach(ws => {
         ws.send("HEARTBEAT");
-        ws.send(`UTYPE-NT${ws.userType}`);
+        ws.send(`UTYPE--|NT|${ws.userType}`);
     })
-}, 5000);
+}, 3000);
 
 function getHostIfAvaliable(roomId) {
     if (!roomsUsersConnectionDictionary[roomId]

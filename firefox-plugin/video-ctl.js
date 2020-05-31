@@ -80,7 +80,12 @@ function syncRequest()
 		if (isConnectionGenerated)
 		{
 			console.info("Sending sync command!");
-			hestiaWebsocketConnection.send("SYNC-T" + videoElement.currentTime);
+			const currentVideoState = videoElement.paused ? "PAUSED" : "PLAYED";
+			const newCommand = `SYNC--|T|${videoElement.currentTime}`
+						 	 + `--|S|${currentVideoState}`
+							 + `--|U|${window.location.href}`;
+			console.log(newCommand);
+			hestiaWebsocketConnection.send(newCommand);
 		}
 		else
 		{
@@ -97,11 +102,53 @@ function syncVideo(command)
 {
 	if (videoElement)
 	{
-		const time = command.split("-T");
-		if (time[1])
+		const uriVal = command.split("--|U|");
+		const requiredUri = uriVal[1];
+		if (requiredUri)
 		{
-			videoElement.currentTime = time[1];
-			console.log("Yours video was synced to time: " + time[1]);
+			const currentUri = window.location.href;
+
+			if (currentUri !== requiredUri)
+			{
+				browser.storage.sync.set({
+					last_data: {
+						room: roomNamePreview.innerText,
+						user: currentUserNickname
+					}
+				}).then(_ => {
+					window.location.href = requiredUri;
+					console.log("Yours video was synced TO URI: " + requiredUri + "FROM: " + currentUri);
+				});
+			}
+		}
+
+		const playPauseState = command.split("--|S|");
+		const requiredPPState = playPauseState[1];
+		if (requiredPPState)
+		{
+			if (requiredPPState.includes("PAUSE"))
+			{
+				videoElement.pause();
+				console.log("Your video was synced to PAUSE");
+			}
+			else if (requiredPPState.includes("PLAY"))
+			{
+				videoElement.play();
+				console.log("Your video was synced to PLAY");
+			}
+		}
+
+		const time = command.split("--|T|");
+		const notTrimmedTime = time[1];
+		if (notTrimmedTime)
+		{
+			trimmedTime = notTrimmedTime.split("--");
+			const requestedTime = trimmedTime[0];
+			if (requestedTime && Math.abs(videoElement.currentTime - requestedTime) > 3.14)
+			{
+				videoElement.currentTime = requestedTime;
+				console.log("Yours video was synced to time: " + requestedTime);
+			}
 		}
 	}
 	else
