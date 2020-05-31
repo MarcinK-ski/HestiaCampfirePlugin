@@ -97,7 +97,7 @@ function syncVideo(command)
 {
 	if (videoElement)
 	{
-		const time = command.split('T');
+		const time = command.split("-T");
 		if (time[1])
 		{
 			videoElement.currentTime = time[1];

@@ -13,6 +13,7 @@ function generateConnection(user = "U")
         const roomIdValue = value.room_id;
         if (value && roomIdValue)
         {
+            setNewUserType(userTypes["GUEST-D"]);
             const wsUrl = "wss://hestia-campfire-server.herokuapp.com?room=" + roomIdValue + "&user=" + user;
             hestiaWebsocketConnection = new WebSocket(wsUrl);
             console.log("Trying to connect to websocket with room: " + roomIdValue);
