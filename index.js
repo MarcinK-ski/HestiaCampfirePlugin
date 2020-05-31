@@ -2,6 +2,11 @@ const express = require('express');
 const WebSocket = require('ws');
 const url = require('url');
 
+updateUserTypesModule();
+var userTypes = require('./userTypesModule');
+
+console.log(userTypes);
+
 const PORT = process.env.PORT || 8080;
 const INDEX_HTML = 'overview.html';
 
@@ -81,4 +86,11 @@ function removeUserFromDictionary(user, roomId) {
             console.log(`> Room: ${roomId} has been deleted!`);
         }
     }
+}
+
+function updateUserTypesModule() {
+    var fs = require('fs');
+    var userTypesFileContent = fs.readFileSync('firefox-plugin/user-types.js', 'utf8');
+    userTypesFileContent += "\nmodule.exports = userTypes;";
+    fs.writeFileSync('userTypesModule.js',userTypesFileContent);
 }
