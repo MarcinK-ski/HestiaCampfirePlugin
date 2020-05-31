@@ -50,6 +50,18 @@ function receiveMessage(event, isFromSocket = false)
 			{
 				syncVideo(message);
 			}
+			else if (message.includes("UTYPE-NT"))
+			{
+				const newTypeCommandArray = message.split("-NT");
+				if (newTypeCommandArray[1])
+				{
+					const newType = userTypes[newTypeCommandArray[1]];
+					if (newType)
+					{
+						setNewUserType(newType);
+					}
+				}
+			}
 	}
 }
 
