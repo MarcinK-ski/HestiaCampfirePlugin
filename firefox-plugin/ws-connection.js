@@ -1,16 +1,18 @@
 var isConnectionGenerated = false;
 var hestiaWebsocketConnection = null;
 var roomIdFromStorage = undefined;
+var currentUserNickname = '';
 
-function generateConnection(user = "U")
+function generateConnection(user = "U", roomId = undefined)
 {
     isConnectionGenerated = false;
+    currentUserNickname = user;
 
     roomIdFromStorage = browser.storage.sync.get('room_id');
     console.log(browser.storage);
     roomIdFromStorage.then(value => {
         console.log(value);
-        const roomIdValue = value.room_id;
+        const roomIdValue = roomId || value.room_id;
         if (value && roomIdValue)
         {
             setNewUserType(userTypes["GUEST-D"]);

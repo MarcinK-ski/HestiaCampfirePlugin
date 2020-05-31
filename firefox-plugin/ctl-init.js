@@ -6,6 +6,7 @@ function receiveMessage(event, isFromSocket = false)
 	var message = event.data;
 	console.log("INCOMING MESSAGE: ");
 	console.log(message);
+	var heartbeat = false;
 	
 	switch (message) 
 	{
@@ -21,8 +22,14 @@ function receiveMessage(event, isFromSocket = false)
 		case "PAUSE":
 			pauseVideo(isFromSocket);
 			break;
+		case "HEARTBEAT":
+			if (!isUserTypeWithPermission(currentUserType))
+			{
+				break;
+			}
+			heartbeat = true;
 		case "SYNC":
-			if (!isFromSocket)
+			if (!isFromSocket || heartbeat)
 			{
 				syncRequest();
 			}
@@ -46,13 +53,13 @@ function receiveMessage(event, isFromSocket = false)
 			}
 			break;
 		default:
-			if (message.includes("SYNC-T"))
+			if (message.includes("SYNC--|T|"))
 			{
 				syncVideo(message);
 			}
-			else if (message.includes("UTYPE-NT"))
+			else if (message.includes("UTYPE--|NT|"))
 			{
-				const newTypeCommandArray = message.split("-NT");
+				const newTypeCommandArray = message.split("--|NT|");
 				if (newTypeCommandArray[1])
 				{
 					const newType = userTypes[newTypeCommandArray[1]];
@@ -78,14 +85,32 @@ function onLoadedWebPage()
 		{
 			buildCtrlPanel();
 		}
+
+		restorePreviousDataIfExists();
 	}
 	else
 	{
 		// TODO: Info, ze nie ma video - najlepiej ikonka plugina
-
+		console.error("Video not found");
 		if (isButtonsDivActive && !forceDisplay)
 		{
 			destroyCtrlPanel();
 		}
 	}
+}
+
+function restorePreviousDataIfExists() {
+	var getLastData = browser.storage.sync.get('last_data');
+	getLastData.then((res) =>
+	{
+		const lastData = res.last_data;
+		if (lastData && lastData.room && lastData.user)
+		{
+			console.warn(`Restoring last data -> room: ${lastData.room} and user: ${lastData.user}`);
+			connectionEstablished()
+			generateConnection(lastData.user, lastData.room);
+
+			browser.storage.sync.set({ last_data: undefined }).then(_ => console.log("Last data has been cleared!"));
+		}
+	});
 }
