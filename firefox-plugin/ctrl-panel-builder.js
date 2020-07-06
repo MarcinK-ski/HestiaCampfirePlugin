@@ -11,6 +11,8 @@ var pauseBtn;
 var syncBtn;
 var connectBtn;
 var disconnectBtn;
+var makeTempHostSelectList;
+var makeTempHostBtn;
 
 function buildCtrlPanel()
 {
@@ -83,6 +85,14 @@ function buildCtrlPanel()
     disconnectBtn.disabled = true;
     mainContainerDiv.appendChild(disconnectBtn);
 
+    makeTempHostSelectList = document.createElement("select");
+    makeTempHostSelectList.style.display = "none";
+    mainContainerDiv.append(makeTempHostSelectList);
+
+    makeTempHostBtn = document.createElement("button");
+    makeTempHostBtn.innerText = "GIVE T-HOST";
+    makeTempHostBtn.style.display = "none";
+    mainContainerDiv.append(makeTempHostBtn);
 
     var loadVideoBtn = document.createElement("button");
     loadVideoBtn.onclick = function()
@@ -136,6 +146,20 @@ function setNewUserType(newUserType)
         disableSyncBtn(!isUserTypeWithPermission(newUserType));
         disablePlayBtn(newUserType === userTypes["GUEST-D"]);
         disablePauseBtn(newUserType === userTypes["GUEST-D"]);
+        setOrRevokeAbilityToGiveTempHostMode(newUserType === userTypes["HOST"]);
+    }
+}
+
+function setOrRevokeAbilityToGiveTempHostMode(isItHost) {
+    if (isItHost)
+    {
+        makeTempHostBtn.style.display = "";
+        makeTempHostSelectList.style.display = "";
+    }
+    else
+    {
+        makeTempHostBtn.style.display = "none";
+        makeTempHostSelectList.style.display = "none";
     }
 }
 
