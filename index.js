@@ -100,7 +100,11 @@ function thostManagement(ws, thostUser) {
     sendCurrentRoomUsersList(ws);
 }
 
-function sendCurrentRoomUsersList(ws) {
+function sendCurrentRoomUsersList(ws, withResetUsersNo = false) {
+    if (withResetUsersNo) {
+        resetUsersNoInRoom(ws.room)
+    }
+
     const jsonWithUsersInThisRoom = JSON.stringify({
         usersInThisRoom: roomsUsersConnectionDictionary[ws.room].map(s => {
             return {
@@ -176,7 +180,7 @@ function removeUserFromDictionary(user, roomId) {
             console.log(`> Room: ${roomId} has been deleted!`);
         }
     } else {
-        sendCurrentRoomUsersList({room: roomId, id: -1});
+        sendCurrentRoomUsersList({room: roomId, id: -1}, true);
     }
 }
 
