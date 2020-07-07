@@ -51,7 +51,15 @@ wss.on('connection', function connection(ws, req) {
     ws.on('message', function incoming(message) {
         console.log(`> Received message: ${message} from user: ${ws.id}`);
 
-        if (!message.includes('SYNC') || ut.isUserTypeWithPermission(ws.userType)) {
+        if (message.includes('THOST - ') && ws.userType === ut.userTypes.HOST) {
+            try {
+                var thostUser = JSON.parse(message.substring(message.indexOf('-') + 1).trim());
+                thostManagement(ws, thostUser);
+            }
+            catch (e) {
+                console.error(`JSON parsing failed due to: ${e}`)
+            }
+        } else if (!message.includes('SYNC') || ut.isUserTypeWithPermission(ws.userType)) {
             sendToEveryone(ws, message, true);
         } else {
             console.error(`>! User: ${ws.id} is not allowed to: ${message}, 
@@ -67,6 +75,30 @@ wss.on('connection', function connection(ws, req) {
     ws.send('YOU ARE CONNECTED TO ROOM:' + ws.room);
     sendCurrentRoomUsersList(ws);
 });
+
+function thostManagement(ws, thostUser) {
+    console.log(roomsUsersConnectionDictionary);
+    var currentRoom = roomsUsersConnectionDictionary[ws.room];
+    var currentThost = roomsUsersConnectionDictionary[ws.room].find(u => u.userType === ut.userTypes["HOST-T"]);
+    var requestedUser = currentRoom[thostUser.no];
+
+    if (currentThost) {
+        if (requestedUser === currentThost) {
+            requestedUser.userType = ut.userTypes["GUEST-V"];
+        } else if (requestedUser.userType === ut.userTypes["GUEST-V"]) {
+            currentThost.userType = ut.userTypes["GUEST-V"];
+            requestedUser.userType = ut.userTypes["HOST-T"];
+        }
+    } else {
+        requestedUser.userType = ut.userTypes["HOST-T"];
+    }
+
+
+    currentThost = roomsUsersConnectionDictionary[ws.room].find(u => u.userType === ut.userTypes["HOST-T"]);
+    var message = currentThost ? `${currentThost.userNo}.${currentThost.userFriendlyName}` : '';
+    sendToEveryone(ws, `THOSTUPDATE:${message}`);
+    sendCurrentRoomUsersList(ws);
+}
 
 function sendCurrentRoomUsersList(ws) {
     const jsonWithUsersInThisRoom = JSON.stringify({

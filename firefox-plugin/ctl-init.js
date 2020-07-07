@@ -1,5 +1,6 @@
 console.log("INIT has been started");
 var currentDomainPage = undefined;
+var currentThost = undefined;
 
 function receiveMessage(event, isFromSocket = false)
 {
@@ -51,7 +52,7 @@ function receiveMessage(event, isFromSocket = false)
 				pauseVideo(isFromSocket);
 				break;
 			case "HEARTBEAT":
-				if (!isUserTypeWithPermission(currentUserType))
+				if (!isUserTypeWithPermission(currentUserType) || (currentThost && currentUserType === userTypes.HOST))
 				{
 					break;
 				}
@@ -96,6 +97,27 @@ function receiveMessage(event, isFromSocket = false)
 							setNewUserType(newType);
 						}
 					}
+				}
+				else if (message.includes("THOST - "))
+				{
+					var json = message.substring(message.indexOf('-') + 1).trim();
+					try
+					{
+						JSON.parse(json);
+						sendThostRequest(message);
+					}
+					catch (e)
+					{
+						alert("Giving HOST-T permission failed");
+						console.error(`${e}\n${json}`);
+					}
+				}
+				else if (message.includes("THOSTUPDATE:"))
+				{
+					var whoIsThost = message.substring(message.indexOf(':') + 1).trim();
+					var newInfo = whoIsThost ? `New HOST-T is: ${whoIsThost}.` : "No HOST-T user in this room anymore."
+					alert(newInfo);
+					currentThost = whoIsThost || undefined;
 				}
 		}
 	}

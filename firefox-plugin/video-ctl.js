@@ -174,3 +174,12 @@ function lagMeasure(isFromSocket = false)
 	//destroyCtrlPanel();
 */
 }
+
+
+function sendThostRequest(message)
+{
+	if (isConnectionGenerated)
+	{
+		hestiaWebsocketConnection.send(message);
+	}
+}

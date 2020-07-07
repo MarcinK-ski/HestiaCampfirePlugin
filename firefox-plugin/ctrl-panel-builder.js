@@ -92,6 +92,14 @@ function buildCtrlPanel()
     mainContainerDiv.append(makeTempHostSelectList);
 
     makeTempHostBtn = document.createElement("button");
+    makeTempHostBtn.onclick = function()
+    {
+        var currentUser = makeTempHostSelectList.value;
+        if (currentUser)
+        {
+            parent.postMessage(`THOST - ${currentUser}`, '*');
+        }
+    }
     makeTempHostBtn.innerText = DEFAULT_THOST_TEXT;
     makeTempHostBtn.style.display = "none";
     makeTempHostBtn.disabled = true;
@@ -238,6 +246,7 @@ function connectionEstablished(isEstablished = true)
     {
         fillRoomNamePreviewInnerText();
         setNewUserType(userTypes["DISCONNECTED"]);
+        currentThost = undefined;
     }
 }
 
