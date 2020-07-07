@@ -14,14 +14,14 @@ function receiveMessage(event, isFromSocket = false)
 
 		if (objectFromJson.usersInThisRoom)	// When contains info about current users in the room
 		{
-			makeTempHostSelectList.innerHTML = "";
+			makeTempHostSelectList.innerHTML = "<option value=''>/SELECT USER/</option>";
 			var usersInRoom = objectFromJson.usersInThisRoom;
 
 			for (var i = 0; i < usersInRoom.length; i++)
 			{
 				var currentUser = usersInRoom[i];
 				var option = document.createElement("option");
-				option.value = `${currentUser.no}.${currentUser.user}`;
+				option.value = JSON.stringify(currentUser);
 				option.innerText = `${currentUser.no}.${currentUser.user} (${currentUser.type})`;
 
 				makeTempHostSelectList.appendChild(option);

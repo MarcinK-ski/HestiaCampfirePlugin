@@ -1,3 +1,4 @@
+const DEFAULT_THOST_TEXT = "GIVE T-HOST";
 const buttonsDivId = "CtlButtonsDivCtrlPanel";
 var isButtonsDivActive = false;
 var forceDisplay = false;
@@ -87,11 +88,13 @@ function buildCtrlPanel()
 
     makeTempHostSelectList = document.createElement("select");
     makeTempHostSelectList.style.display = "none";
+    makeTempHostSelectList.onchange = userSelectedFromList;
     mainContainerDiv.append(makeTempHostSelectList);
 
     makeTempHostBtn = document.createElement("button");
-    makeTempHostBtn.innerText = "GIVE T-HOST";
+    makeTempHostBtn.innerText = DEFAULT_THOST_TEXT;
     makeTempHostBtn.style.display = "none";
+    makeTempHostBtn.disabled = true;
     mainContainerDiv.append(makeTempHostBtn);
 
     var loadVideoBtn = document.createElement("button");
@@ -128,6 +131,43 @@ function buildCtrlPanel()
 
     document.body.append(mainContainerDiv);
     isButtonsDivActive = true;
+}
+
+function userSelectedFromList(event)
+{
+    try
+    {
+        var currentUser = makeTempHostSelectList.value;
+        if (currentUser)
+        {
+            makeTempHostBtn.disabled = false;
+
+            var selectedUser = JSON.parse(makeTempHostSelectList.value);
+            if (selectedUser.type === userTypes.HOST)
+            {
+                makeTempHostBtn.disabled = true;
+            }
+            else if (selectedUser.type === userTypes["HOST-T"])
+            {
+                makeTempHostBtn.innerText = "REVOKE T-HOST";
+            }
+            else
+            {
+                makeTempHostBtn.innerText = DEFAULT_THOST_TEXT;
+            }
+        }
+        else
+        {
+            makeTempHostBtn.disabled = true;
+            makeTempHostBtn.innerText = DEFAULT_THOST_TEXT;
+        }
+    }
+    catch (e)
+    {
+        console.error(e);
+        makeTempHostBtn.disabled = true;
+        makeTempHostBtn.innerText = DEFAULT_THOST_TEXT;
+    }
 }
 
 function destroyCtrlPanel()
