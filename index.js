@@ -159,7 +159,10 @@ function removeUserFromDictionary(user, roomId) {
             console.warn(`> User was permitted - all userTypes will be reset 
                                     (oldest user will be as HOST, others - GUEST-V).`);
             for (i = 0; i < room.length; i++) {
-                room[i].userType = getHostIfAvaliable(roomId);
+                var currentUser = room[i];
+                if (currentUser.userType !== ut.userTypes.HOST) {
+                    currentUser.userType = getHostIfAvaliable(roomId);
+                }
             }
         }
     } else {
