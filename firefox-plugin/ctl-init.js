@@ -94,6 +94,11 @@ function receiveMessage(event, isFromSocket = false)
 						const newType = userTypes[newTypeCommandArray[1]];
 						if (newType)
 						{
+							if (newType === userTypes.HOST && currentUserType !== userTypes.HOST)
+							{
+								currentThost = undefined;
+							}
+
 							setNewUserType(newType);
 						}
 					}
