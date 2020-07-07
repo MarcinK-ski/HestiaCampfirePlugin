@@ -65,7 +65,10 @@ wss.on('connection', function connection(ws, req) {
     });
 
     ws.send('YOU ARE CONNECTED TO ROOM:' + ws.room);
+    sendCurrentRoomUsersList(ws);
+});
 
+function sendCurrentRoomUsersList(ws) {
     const jsonWithUsersInThisRoom = JSON.stringify({
         usersInThisRoom: roomsUsersConnectionDictionary[ws.room].map(s => {
             return {
@@ -76,7 +79,7 @@ wss.on('connection', function connection(ws, req) {
         })
     });
     sendToEveryone(ws, jsonWithUsersInThisRoom);
-});
+}
 
 function sendToEveryone(ws, message, omitSender = false) {
     roomsUsersConnectionDictionary[ws.room].forEach(sock => {
@@ -140,6 +143,8 @@ function removeUserFromDictionary(user, roomId) {
         } else {
             console.log(`> Room: ${roomId} has been deleted!`);
         }
+    } else {
+        sendCurrentRoomUsersList({room: roomId, id: -1});
     }
 }
 
