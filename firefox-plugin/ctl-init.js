@@ -39,7 +39,7 @@ function receiveMessage(event, isFromSocket = false)
 			{
 				if (currentThost)
 				{
-					alert("HOST-T is not connected anymore (Disconn./Left)");
+					alert("HOST-T is not connected anymore (Disconnected/Left/Revoked)");
 				}
 
 				currentThost = undefined;
