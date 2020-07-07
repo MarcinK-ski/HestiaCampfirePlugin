@@ -17,6 +17,7 @@ function receiveMessage(event, isFromSocket = false)
 		{
 			makeTempHostSelectList.innerHTML = "<option value=''>/SELECT USER/</option>";
 			var usersInRoom = objectFromJson.usersInThisRoom;
+			var isThostExists = false;
 
 			for (var i = 0; i < usersInRoom.length; i++)
 			{
@@ -26,6 +27,21 @@ function receiveMessage(event, isFromSocket = false)
 				option.innerText = `${currentUser.no}.${currentUser.user} (${currentUser.type})`;
 
 				makeTempHostSelectList.appendChild(option);
+
+				if (currentUser.type === userTypes["HOST-T"])
+				{
+					isThostExists = true;
+				}
+			}
+
+			if (!isThostExists)
+			{
+				if (currentThost)
+				{
+					alert("HOST-T is not connected anymore (Disconn./Left)");
+				}
+
+				currentThost = undefined;
 			}
 		}
 		else
