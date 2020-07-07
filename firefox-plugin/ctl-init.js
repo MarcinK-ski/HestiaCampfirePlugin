@@ -16,6 +16,7 @@ function receiveMessage(event, isFromSocket = false)
 		if (objectFromJson.usersInThisRoom)	// When contains info about current users in the room
 		{
 			makeTempHostSelectList.innerHTML = "<option value=''>/SELECT USER/</option>";
+			makeTempHostBtn.disabled = true;
 			var usersInRoom = objectFromJson.usersInThisRoom;
 			var isThostExists = false;
 
