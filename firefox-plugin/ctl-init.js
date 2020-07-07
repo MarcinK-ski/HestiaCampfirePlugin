@@ -7,68 +7,97 @@ function receiveMessage(event, isFromSocket = false)
 	console.log("INCOMING MESSAGE: ");
 	console.log(message);
 	var heartbeat = false;
-	
-	switch (message) 
+
+	try
 	{
-		case "LOAD":
-			if (!isFromSocket)
+		var objectFromJson = JSON.parse(message);
+
+		if (objectFromJson.usersInThisRoom)	// When contains info about current users in the room
+		{
+			makeTempHostSelectList.innerHTML = "";
+			var usersInRoom = objectFromJson.usersInThisRoom;
+
+			for (var i = 0; i < usersInRoom.length; i++)
 			{
-				loadVideoElement();
+				var currentUser = usersInRoom[i];
+				var option = document.createElement("option");
+				option.value = `${currentUser.no}.${currentUser.user}`;
+				option.innerText = `${currentUser.no}.${currentUser.user} (${currentUser.type})`;
+
+				makeTempHostSelectList.appendChild(option);
 			}
-			break;
-		case "PLAY":
-			playVideo(isFromSocket);
-			break;
-		case "PAUSE":
-			pauseVideo(isFromSocket);
-			break;
-		case "HEARTBEAT":
-			if (!isUserTypeWithPermission(currentUserType))
-			{
-				break;
-			}
-			heartbeat = true;
-		case "SYNC":
-			if (!isFromSocket || heartbeat)
-			{
-				syncRequest();
-			}
-			break;
-		case "INFO":
-			showPageUrl(isFromSocket);
-			break;
-		case "LAG":
-			lagMeasure(isFromSocket);
-			break;
-		case "CONNECT":
-			if (!isFromSocket)
-			{
-				generateConnection();
-			}
-			break;
-		case "DISCONNECT":
-			if (!isFromSocket)
-			{
-				closeConnection();
-			}
-			break;
-		default:
-			if (message.includes("SYNC--|T|"))
-			{
-				syncVideo(message);
-			}
-			else if (message.includes("UTYPE--|NT|"))
-			{
-				const newTypeCommandArray = message.split("--|NT|");
-				if (newTypeCommandArray[1])
+		}
+		else
+		{
+			var exceptionMsg = "Json detected, but is not match to any pattern";
+			console.warn(exceptionMsg);
+			throw exceptionMsg;
+		}
+	}
+	catch (e)	// When is not JSON (parsing failed) or JSON don't "match with pattern" (don't have specified property)
+	{
+		switch (message)
+		{
+			case "LOAD":
+				if (!isFromSocket)
 				{
-					const newType = userTypes[newTypeCommandArray[1]];
-					if (newType)
+					loadVideoElement();
+				}
+				break;
+			case "PLAY":
+				playVideo(isFromSocket);
+				break;
+			case "PAUSE":
+				pauseVideo(isFromSocket);
+				break;
+			case "HEARTBEAT":
+				if (!isUserTypeWithPermission(currentUserType))
+				{
+					break;
+				}
+				heartbeat = true;
+			case "SYNC":
+				if (!isFromSocket || heartbeat)
+				{
+					syncRequest();
+				}
+				break;
+			case "INFO":
+				showPageUrl(isFromSocket);
+				break;
+			case "LAG":
+				lagMeasure(isFromSocket);
+				break;
+			case "CONNECT":
+				if (!isFromSocket)
+				{
+					generateConnection();
+				}
+				break;
+			case "DISCONNECT":
+				if (!isFromSocket)
+				{
+					closeConnection();
+				}
+				break;
+			default:
+				if (message.includes("SYNC--|T|"))
+				{
+					syncVideo(message);
+				}
+				else if (message.includes("UTYPE--|NT|"))
+				{
+					const newTypeCommandArray = message.split("--|NT|");
+					if (newTypeCommandArray[1])
 					{
-						setNewUserType(newType);
+						const newType = userTypes[newTypeCommandArray[1]];
+						if (newType)
+						{
+							setNewUserType(newType);
+						}
 					}
 				}
-			}
+		}
 	}
 }
 
