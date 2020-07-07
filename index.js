@@ -29,6 +29,9 @@ wss.on('connection', function connection(ws, req) {
     ws.id = req.headers['sec-websocket-key'];
     console.log(`> UserId: ${ws.id}`);
 
+    ws.userFriendlyName = urlQuery.user;
+    console.log(`> With name: ${ws.userFriendlyName}`);
+
     ws.room = urlQuery.room;
     const roomId = ws.room;
     console.log(`> To room: ${roomId}`);
@@ -42,15 +45,22 @@ wss.on('connection', function connection(ws, req) {
         roomsUsersConnectionDictionary[roomId] = [ws];
     }
 
+    resetUsersNoInRoom(roomId);
+    console.log(`> This user is: ${ws.userNo} in this room`);
+
     ws.on('message', function incoming(message) {
         console.log(`> Received message: ${message} from user: ${ws.id}`);
 
-        if (!message.includes('SYNC') || ut.isUserTypeWithPermission(ws.userType)) {
-            roomsUsersConnectionDictionary[ws.room].forEach(sock => {
-                if (sock.id !== ws.id) {
-                    sock.send(message);
-                }
-            });
+        if (message.includes('THOST - ') && ws.userType === ut.userTypes.HOST) {
+            try {
+                var thostUser = JSON.parse(message.substring(message.indexOf('-') + 1).trim());
+                thostManagement(ws, thostUser);
+            }
+            catch (e) {
+                console.error(`JSON parsing failed due to: ${e}`)
+            }
+        } else if (!message.includes('SYNC') || ut.isUserTypeWithPermission(ws.userType)) {
+            sendToEveryone(ws, message, true);
         } else {
             console.error(`>! User: ${ws.id} is not allowed to: ${message}, 
                               because it is: ${ws.userType} in room: ${ws.room}`);
@@ -63,7 +73,57 @@ wss.on('connection', function connection(ws, req) {
     });
 
     ws.send('YOU ARE CONNECTED TO ROOM:' + ws.room);
+    sendCurrentRoomUsersList(ws);
 });
+
+function thostManagement(ws, thostUser) {
+    console.log(roomsUsersConnectionDictionary);
+    var currentRoom = roomsUsersConnectionDictionary[ws.room];
+    var currentThost = roomsUsersConnectionDictionary[ws.room].find(u => u.userType === ut.userTypes["HOST-T"]);
+    var requestedUser = currentRoom[thostUser.no];
+
+    if (currentThost) {
+        if (requestedUser === currentThost) {
+            requestedUser.userType = ut.userTypes["GUEST-V"];
+        } else if (requestedUser.userType === ut.userTypes["GUEST-V"]) {
+            currentThost.userType = ut.userTypes["GUEST-V"];
+            requestedUser.userType = ut.userTypes["HOST-T"];
+        }
+    } else {
+        requestedUser.userType = ut.userTypes["HOST-T"];
+    }
+
+
+    currentThost = roomsUsersConnectionDictionary[ws.room].find(u => u.userType === ut.userTypes["HOST-T"]);
+    var message = currentThost ? `${currentThost.userNo}.${currentThost.userFriendlyName}` : '';
+    sendToEveryone(ws, `THOSTUPDATE:${message}`);
+    sendCurrentRoomUsersList(ws);
+}
+
+function sendCurrentRoomUsersList(ws, withResetUsersNo = false) {
+    if (withResetUsersNo) {
+        resetUsersNoInRoom(ws.room)
+    }
+
+    const jsonWithUsersInThisRoom = JSON.stringify({
+        usersInThisRoom: roomsUsersConnectionDictionary[ws.room].map(s => {
+            return {
+                no: s.userNo,
+                user:s.userFriendlyName,
+                type: s.userType
+            };
+        })
+    });
+    sendToEveryone(ws, jsonWithUsersInThisRoom);
+}
+
+function sendToEveryone(ws, message, omitSender = false) {
+    roomsUsersConnectionDictionary[ws.room].forEach(sock => {
+        if (!omitSender || sock.id !== ws.id) {
+            sock.send(message);
+        }
+    });
+}
 
 setInterval(function () {
     wss.clients.forEach(ws => {
@@ -71,6 +131,12 @@ setInterval(function () {
         ws.send(`UTYPE--|NT|${ws.userType}`);
     })
 }, 3000);
+
+function resetUsersNoInRoom(roomId) {
+    for (let i = 0; i < roomsUsersConnectionDictionary[roomId].length; i++) {
+        roomsUsersConnectionDictionary[roomId][i].userNo = i;
+    }
+}
 
 function getHostIfAvaliable(roomId) {
     if (!roomsUsersConnectionDictionary[roomId]
@@ -93,7 +159,10 @@ function removeUserFromDictionary(user, roomId) {
             console.warn(`> User was permitted - all userTypes will be reset 
                                     (oldest user will be as HOST, others - GUEST-V).`);
             for (i = 0; i < room.length; i++) {
-                room[i].userType = getHostIfAvaliable(roomId);
+                var currentUser = room[i];
+                if (currentUser.userType !== ut.userTypes.HOST) {
+                    currentUser.userType = getHostIfAvaliable(roomId);
+                }
             }
         }
     } else {
@@ -113,6 +182,8 @@ function removeUserFromDictionary(user, roomId) {
         } else {
             console.log(`> Room: ${roomId} has been deleted!`);
         }
+    } else {
+        sendCurrentRoomUsersList({room: roomId, id: -1}, true);
     }
 }
 

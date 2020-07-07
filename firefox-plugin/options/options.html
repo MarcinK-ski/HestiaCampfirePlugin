@@ -5,10 +5,15 @@
     <meta charset="UTF-8">
 </head>
 <body>
+    <p>Your's current friendly name: <b id="storage-user-friendly-name">no value found</b></p>
     <p>Stored room id: <b id="storage-room-id">no value found</b></p>
     <form>
+        <label for="user-friendly-name">Your friendly name: </label>
+        <input type="text" id="user-friendly-name" maxlength="20">
+        <br />
         <label for="room-id">Room you're joined in: </label>
         <input type="text" id="room-id" maxlength="11">
+
         <button type="submit">Save</button>
     </form>
     <script src="options.js"></script>
