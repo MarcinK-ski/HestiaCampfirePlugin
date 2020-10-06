@@ -12,6 +12,7 @@ var pauseBtn;
 var syncBtn;
 var connectBtn;
 var disconnectBtn;
+var toggleUsersSelectorBtn;
 var makeTempHostSelectList;
 var makeTempHostBtn;
 
@@ -50,7 +51,7 @@ function buildCtrlPanel()
     pauseBtn.innerText = "PAUSE";
     mainContainerDiv.appendChild(pauseBtn);
 
-
+/*
     syncBtn = document.createElement("button");
     syncBtn.onclick = function()
     {
@@ -66,6 +67,7 @@ function buildCtrlPanel()
     syncBtn.innerText = "SYNC";
     syncBtn.disabled = true;
     mainContainerDiv.appendChild(syncBtn);
+*/
 
     connectBtn = document.createElement("button");
     connectBtn.onclick = function()
@@ -86,6 +88,26 @@ function buildCtrlPanel()
     disconnectBtn.disabled = true;
     mainContainerDiv.appendChild(disconnectBtn);
 
+
+    toggleUsersSelectorBtn = document.createElement("button");
+    toggleUsersSelectorBtn.onclick = function()
+    {
+        if (makeTempHostSelectList.style.display === "none")
+        {
+            makeTempHostSelectList.style.display = "";
+            makeTempHostBtn.style.display = "";
+        }
+        else
+        {
+            makeTempHostSelectList.style.display = "none";
+            makeTempHostBtn.style.display = "none";
+        }
+    };
+    toggleUsersSelectorBtn.style.display = "none";
+    toggleUsersSelectorBtn.innerText = "USERS";
+    toggleUsersSelectorBtn.disabled = true;
+    mainContainerDiv.appendChild(toggleUsersSelectorBtn);
+
     makeTempHostSelectList = document.createElement("select");
     makeTempHostSelectList.style.display = "none";
     makeTempHostSelectList.onchange = userSelectedFromList;
@@ -105,6 +127,7 @@ function buildCtrlPanel()
     makeTempHostBtn.disabled = true;
     mainContainerDiv.append(makeTempHostBtn);
 
+/*
     var loadVideoBtn = document.createElement("button");
     loadVideoBtn.onclick = function()
     {
@@ -128,6 +151,7 @@ function buildCtrlPanel()
     };
     lagMeasureBtn.innerText = "LAG";
     mainContainerDiv.appendChild(lagMeasureBtn);
+*/
 
     /*
         BEGIN: Button for testing
@@ -201,11 +225,11 @@ function setNewUserType(newUserType)
 function setOrRevokeAbilityToGiveTempHostMode(isItHost) {
     if (isItHost)
     {
-        makeTempHostBtn.style.display = "";
-        makeTempHostSelectList.style.display = "";
+        toggleUsersSelectorBtn.style.display = "";
     }
     else
     {
+        toggleUsersSelectorBtn.style.display = "none";
         makeTempHostBtn.style.display = "none";
         makeTempHostSelectList.style.display = "none";
     }
@@ -223,7 +247,7 @@ function disableDisconnectBtn(toDisable = true)
 
 function disableSyncBtn(toDisable = true)
 {
-    syncBtn.disabled = toDisable;
+    //syncBtn.disabled = toDisable;
 }
 
 function disablePlayBtn(toDisable = true)
@@ -236,11 +260,17 @@ function disablePauseBtn(toDisable = true)
     pauseBtn.disabled = toDisable;
 }
 
+function disableToggleUsersBtn(toDisable = true)
+{
+    toggleUsersSelectorBtn.disabled = toDisable;
+}
+
 function connectionEstablished(isEstablished = true)
 {
     disableConnectBtn(isEstablished);
     disableDisconnectBtn(!isEstablished);
     disableSyncBtn(!isEstablished);
+    disableToggleUsersBtn(!isEstablished);
 
     if (!isEstablished)
     {
