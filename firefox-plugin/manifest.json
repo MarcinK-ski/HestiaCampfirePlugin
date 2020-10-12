@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Hestia Campfire Plugin",
-  "version": "1.6",
+  "version": "1.7",
   "description": "Plugin for watching videos on website with your family or/and friends in this same time, on different devices.",
   "author": "Marcin Kalinowski",
   "developer": {
@@ -37,6 +37,9 @@
         "ctrl-panel-builder.js",
         "video-ctl.js",
         "ws-connection.js"
+      ],
+      "css": [
+        "css/hestiacampfire.css"
       ],
       "run_at": "document_end"
     }
