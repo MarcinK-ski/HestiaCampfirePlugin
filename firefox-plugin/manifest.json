@@ -38,6 +38,9 @@
         "video-ctl.js",
         "ws-connection.js"
       ],
+      "css": [
+        "css/hestiacampfire.css"
+      ],
       "run_at": "document_end"
     }
   ]

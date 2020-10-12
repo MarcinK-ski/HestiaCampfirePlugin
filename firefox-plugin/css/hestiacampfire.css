@@ -1,0 +1,60 @@
+#hcf-ctrl-panel-div {
+    padding: 3px;
+    background-color: rgba(0, 94, 255, 0.3);
+    opacity: 0.5;
+    position: fixed;
+    z-index: 99999;
+    bottom: 80px;
+    left: 0;
+    width: 75px
+}
+
+.hcf-labels {
+    color: white;
+}
+
+#hcf-user-type-label {
+    text-align: center;
+    margin-bottom: 5px;
+    font-style: italic;
+}
+
+#hcf-room-name-label {
+    padding-left: 2px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.hcf-icons {
+    margin-left: 2px;
+    background-size: cover;
+    display: inline-block;
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+}
+
+.hcf-icons:disabled {
+    opacity: 0.5;
+}
+
+#hcf-play-button {
+    background-image: url("../icons/panel/play.jpg");
+}
+
+#hcf-pause-button {
+    background-image: url("../icons/panel/pause.jpg");
+}
+
+#hcf-connect-button {
+    background-image: url("../icons/panel/connect.jpg");
+}
+
+#hcf-disconnect-button {
+    background-image: url("../icons/panel/disconnect.jpg");
+}
+
+#hcf-users-list-button {
+    background-image: url("../icons/panel/users-list.jpg");
+    width: 64px !important;
+}
