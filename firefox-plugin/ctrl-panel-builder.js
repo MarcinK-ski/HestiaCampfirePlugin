@@ -1,5 +1,5 @@
 const DEFAULT_THOST_TEXT = "GIVE T-HOST";
-const buttonsDivId = "CtlButtonsDivCtrlPanel";
+const buttonsDivId = "hcf-ctrl-panel-div";
 var isButtonsDivActive = false;
 var forceDisplay = false;
 
@@ -20,35 +20,39 @@ function buildCtrlPanel()
 {
     var mainContainerDiv = document.createElement("div");
     mainContainerDiv.id = buttonsDivId;
-    mainContainerDiv.style = "background-color: rgba(255, 0, 0, 0.3); opacity: 0.5; position: fixed; z-index: 99999; bottom: 50px; left: 0px; width:60px";
+
+    userTypePreview = document.createElement("p");
+    userTypePreview.id = "hcf-user-type-label";
+    userTypePreview.classList.add("hcf-labels");
+    setNewUserType(userTypes["DISCONNECTED"]);
+    mainContainerDiv.appendChild(userTypePreview);
 
     roomNamePreview = document.createElement("p");
-    roomNamePreview.style.color = "white";
+    roomNamePreview.id = "hcf-room-name-label";
+    roomNamePreview.classList.add("hcf-labels");
     roomNamePreview.innerText = "RoomNameHere";
     fillRoomNamePreviewInnerText();
     mainContainerDiv.appendChild(roomNamePreview);
 
-    userTypePreview = document.createElement("p");
-    userTypePreview.style.color = "white";
-    setNewUserType(userTypes["DISCONNECTED"]);
-    mainContainerDiv.appendChild(userTypePreview);
-
-
     playBtn = document.createElement("button");
+    playBtn.title = "PLAY";
+    playBtn.id = "hcf-play-button";
+    playBtn.classList.add("hcf-icons");
     playBtn.onclick = function()
     {
         parent.postMessage('PLAY', '*');
     };
-    playBtn.innerText = "PLAY";
     mainContainerDiv.appendChild(playBtn);
 
 
     pauseBtn = document.createElement("button");
+    pauseBtn.title = "PAUSE";
+    pauseBtn.id = "hcf-pause-button";
+    pauseBtn.classList.add("hcf-icons");
     pauseBtn.onclick = function()
     {
         parent.postMessage('PAUSE', '*');
     };
-    pauseBtn.innerText = "PAUSE";
     mainContainerDiv.appendChild(pauseBtn);
 
 /*
@@ -70,26 +74,33 @@ function buildCtrlPanel()
 */
 
     connectBtn = document.createElement("button");
+    connectBtn.title = "CONNECT TO ROOM";
+    connectBtn.id = "hcf-connect-button";
+    connectBtn.classList.add("hcf-icons");
     connectBtn.onclick = function()
     {
         parent.postMessage('CONNECT', '*');
         connectionEstablished()
     };
-    connectBtn.innerText = "CONNECT";
     mainContainerDiv.appendChild(connectBtn);
 
     disconnectBtn = document.createElement("button");
+    disconnectBtn.title = "DISCONNECT";
+    disconnectBtn.id = "hcf-disconnect-button";
+    disconnectBtn.classList.add("hcf-icons");
     disconnectBtn.onclick = function()
     {
         parent.postMessage('DISCONNECT', '*');
         connectionEstablished(false)
     };
-    disconnectBtn.innerText = "DISCONNECT";
     disconnectBtn.disabled = true;
     mainContainerDiv.appendChild(disconnectBtn);
 
 
     toggleUsersSelectorBtn = document.createElement("button");
+    toggleUsersSelectorBtn.title = "TOGGLE USERS LIST";
+    toggleUsersSelectorBtn.id = "hcf-users-list-button";
+    toggleUsersSelectorBtn.classList.add("hcf-icons");
     toggleUsersSelectorBtn.onclick = function()
     {
         if (makeTempHostSelectList.style.display === "none")
@@ -104,7 +115,6 @@ function buildCtrlPanel()
         }
     };
     toggleUsersSelectorBtn.style.display = "none";
-    toggleUsersSelectorBtn.innerText = "USERS";
     toggleUsersSelectorBtn.disabled = true;
     mainContainerDiv.appendChild(toggleUsersSelectorBtn);
 
@@ -220,6 +230,8 @@ function setNewUserType(newUserType)
         disablePauseBtn(newUserType === userTypes["GUEST-D"]);
         setOrRevokeAbilityToGiveTempHostMode(newUserType === userTypes["HOST"]);
     }
+
+    userTypePreview.style.fontWeight = newUserType === userTypes["DISCONNECTED"] ? "normal" : "bold";
 }
 
 function setOrRevokeAbilityToGiveTempHostMode(isItHost) {
